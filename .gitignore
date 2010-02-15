@@ -1,0 +1,6 @@
+client
+*.ali
+*.o
+server
+*.*~
+*~*.*
