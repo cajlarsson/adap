@@ -20,7 +20,7 @@ package body Packets is
       return To_Unbounded_String(Slice(Packet, 12, Length(Packet)));
    end Packet_Content;
 
-   procedure Get_Line (Socket: in out Socket_Type; Item: out U_String) is
+   procedure Get_Line (Socket: in Socket_Type; Item: out U_String) is
       Buffer: String(1..100);
       Length: Positive := 100;
    begin
@@ -30,7 +30,14 @@ package body Packets is
       end loop;
    end Get_Line;
 
-   procedure Put_Line (Socket: in out Socket_Type; Item: in U_String) is
+   function Get_Line (Socket: in Socket_Type) return U_String is
+      Temp : U_String;
+   begin
+      Get_Line(Socket, Temp);
+      return Temp;
+   end Get_Line;
+
+   procedure Put_Line (Socket: in Socket_Type; Item: in U_String) is
    begin
       Put_Line(Socket,To_String(Item));
    end Put_Line;

@@ -19,10 +19,11 @@ package Packets is
    function Packet_Head(Packet: U_String) return Character;
    function Packet_Content(Packet: U_String) return U_String;
 
-   procedure Get_Line (Socket: in out Socket_Type; Item: out U_String);
-   procedure Put_Line (Socket: in out Socket_Type; Item: in U_String);
+   procedure Get_Line (Socket: in Socket_Type; Item: out U_String);
+   function Get_Line (Socket: in Socket_Type) return U_String;
+   procedure Put_Line (Socket: in Socket_Type; Item: in U_String);
 
-
+   Unexpected_Head_Type : exception;
 
 private
    function Time_Now return U_String;
