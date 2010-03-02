@@ -20,8 +20,19 @@ procedure Client is
    Text : U_String;
    Text_Length: Natural;
 
-   procedure Login is
+----------------------------------------------------------------------------------------
 
+   procedure Fail is
+
+   begin
+      Put_Line(Socket,Assemble_Packet(FORFEIT_HEAD,Figure_Number));
+      Close(Socket);
+
+   end Fail;
+
+----------------------------------------------------------------------------------------
+
+   procedure Login is
    begin
       Put_Line("Please enter your prefered UserID and Password,");
       Put_Line("Do however note that both are stored unencrypted and are thus not secure.");
@@ -33,6 +44,8 @@ procedure Client is
 
       Get_Line(Socket,Text);
       if Text_Length /= 2 then
+         Put(To_String(Text));
+      else
          Raise_Exception(Constraint_Error'Identity,
                          "Userdata not accepted by server");
          Close(Socket);
@@ -40,6 +53,7 @@ procedure Client is
 
       Put_Line(Socket,Assemble_Packet(NICK_HEAD,To_Unbounded_String("Fistosaurus")));--  FixMes: Nick,
    end Login;
+----------------------------------------------------------------------------------------
 
 begin
 
@@ -48,18 +62,18 @@ begin
                       "Usage: " & Command_Name & " remotehost remoteport");
    end if;
 
-----------------------------------------------------------------------------------------
-
    Port := Natural'Value(Argument(2));
 
    Initiate(Socket);
 
    Connect(Socket, Argument(1), Port);
 
+   --   Login(Socket);
    Login;
 
-   Put_Line(Socket,Assemble_Packet(FORFEIT_HEAD,Figure_Number));
-   Close(Socket);
+   --   Fail(Socket);
+   Fail;
+   --Close(Socket);
 
 end Client;
 
