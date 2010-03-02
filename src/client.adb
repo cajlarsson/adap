@@ -1,14 +1,19 @@
 with Ada.Text_IO;                        use Ada.Text_IO;
 with Ada.Command_Line;                   use Ada.Command_Line;
 with Ada.Exceptions;                     use Ada.Exceptions;
+with Ada.Strings;                        use Ada.Strings;
 with Ada.Integer_Text_IO;                use Ada.Integer_Text_IO;
 with Ada.Strings.Unbounded;              use Ada.Strings.Unbounded;
 
 with TJa.Sockets;                        use TJa.Sockets;
 
 with Packets;                            use Packets;
+with Part_Types;                         use Part_Types;
 
 procedure Client is
+
+   type Full_Part_Array is array (Integer range <>) of Full_Part;
+   type FP_A is access Full_Part_Array;
 
    Socket : Socket_Type;
    Port : Natural;
@@ -19,6 +24,9 @@ procedure Client is
    Figure_Number : Natural;
    Text : U_String;
    Text_Length: Natural;
+   Delbeskrivning : FP_A;
+   Ind : Integer;
+
 
 ----------------------------------------------------------------------------------------
 
@@ -68,12 +76,34 @@ begin
 
    Connect(Socket, Argument(1), Port);
 
-   --   Login(Socket);
    Login;
 
-   --   Fail(Socket);
-   Fail;
-   --Close(Socket);
+   While true loop                       --FixMe: Truue? ORLY?
+      Case Packet_Head(Text) is
+         when 'D' =>
+            Ind := Integer'Value(To_string(Head(Trim(Packet_Content(Text),Left),
+                                        Index(Trim(Packet_Content(Text),Left)," "))));
+            Delbeskrivning := new Full_Part_Array(1..Ind);
+
+            for I in 1..Ind loop
+               null;
+               end loop;
+
+            -- FixMe: Delbeskrivning
+         when 'F' =>
+            null;
+            -- FixMe: Figurbeskrivning
+         when 'R' =>
+            null;
+            -- FixMe: Resultat
+         when 'Q' =>
+            null;
+            -- Quit
+         when others =>
+           null;
+           --FixMe: Error Flyn!
+      end case;
+   end loop;
 
 end Client;
 
