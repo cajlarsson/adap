@@ -18,13 +18,11 @@ package body Bit_Volume is
       return Ou;
    end Make;
 
-
    procedure Delete(BVT: in out Bit_Volume_Type) is
    begin
       Free(BVT.Chunks);
       Free(BVT);
    end;
-
 
    function "and" (BVT1,BVT2 :Bit_Volume_Type) return Bit_Volume_Type is
          Result : Bit_Volume_Type;
@@ -42,7 +40,6 @@ package body Bit_Volume is
       end loop;
          return Result;
    end "and";
-
 
    function "or" (BVT1,BVT2 :Bit_Volume_Type) return Bit_Volume_Type is
       Result : Bit_Volume_Type;
@@ -90,7 +87,6 @@ package body Bit_Volume is
          return Result;
    end "not";
 
-
    function empty (BVT : Bit_Volume_Type) return Boolean is
       Result : Boolean := True;
    begin
@@ -102,6 +98,15 @@ package body Bit_Volume is
       end loop;
       return Result;
    end Empty;
+
+   procedure Clear(BVT : in out Bit_Volume_Type) is
+   begin
+      for I in BVT.Chunks'Range loop
+         BVT.Chunks(I) := 0;
+         end loop;
+
+   end Clear;
+
 
    procedure Put ( BVT : Bit_Volume_Type) is
    begin
@@ -125,9 +130,63 @@ package body Bit_Volume is
 
    end Put;
 
+   procedure Put (BVT: in Bit_Volume_Type; Dst : out Unbounded_String) is
+   begin
+      Dst := To_Unbounded_String("");
+        for I in 1..(BVT.chunks'last-1) loop
+         for J in 1..64 loop
+            if (BVT.Chunks(I) and  Select_Table(J)) = 0 then
+               Dst := Dst & "1";
+            else
+               Dst := Dst & "0";
+            end if;
+
+         end loop;
+      end loop;
+      for J in 1..BVT.Last_Chunk_Length loop
+         if (BVT.Chunks(BVT.Chunks'last) and Select_Table(J)) /= 0 then
+            Dst := Dst & "1";
+         else
+            Dst := Dst & "0";
+            end if;
+      end loop;
+
+   end Put;
+
+   function Put (BVT: Bit_Volume_Type) return Unbounded_String is
+   Result : Unbounded_String;
+   begin
+      Put(BVT,Result);
+      return Result;
+   end Put;
+
+   procedure Get( BVT : out Bit_Volume_Type; Src : in Unbounded_String) is
+   Fix_Src : String(1..Length(Src));
+   begin
+      Fix_Src := To_String(Src);
+      BVT := Make(Length(Src));
+
+      for I in Fix_Src'Range loop
+         if Fix_Src(I..I) = "1" then
+            Set_Index(BVT,I,1);
+         elsif Fix_Src(I..I) = "0" then
+            Set_Index(BVT,I,0);
+         else
+            raise Not_Same_Size;
+         end if;
+      end loop;
+   end Get;
+
+   function Get( src : Unbounded_String) return Bit_Volume_Type is
+   Result : Bit_Volume_Type;
+   begin
+      Get(Result, Src);
+      return Result;
+   end Get;
+
    function Index(BVT : Bit_Volume_Type; I : natural) return bit is
    begin
-      if (Bvt.Chunks(I / 64) and Select_Table(I mod 64)) = 0 then
+      if (Bvt.Chunks(1 + I / 64) and Select_Table(I mod 64)) = 0 then
          return 0;
       else
          return 1;
