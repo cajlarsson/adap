@@ -30,11 +30,17 @@ package  Part_Types  is
 
    procedure Put(Packet : in  Full_Part; Src : out Unbounded_string);
    function Put(Packet : Full_Part) return Unbounded_String;
+   procedure Put(Packet : Full_Part);
+
+
+   function Index(Src: Full_Part; X,Y,Z : Integer) return Bit;
+   procedure Set_Index( Dst : in out Full_Part;Src :Bit; X,Y,Z : in Integer);
 
    procedure Move_to(Sbj: in out  Full_Part; X,Y,Z :  in Integer);
    procedure Rotate_To (Sbj: in out Full_Part ; X,Y,Z :in Integer); -- FIXME ej impl än
 
    procedure Grow(src : in out Full_Part; Dst :  out Full_Part);
+
 
    Malformed_Input : exception;
 
@@ -52,6 +58,7 @@ private
       type Part_Type_Base  is record
          Rot : Rotation_Type;
          Off : Offset_Type;
+         Roff : Offset_Type;
          Master : Integer;
       end record;
 
@@ -65,6 +72,9 @@ private
          Phenotype : Part_Volume;
       end record;
 
+      A_X : constant Integer := 0;
+      A_Y : constant Integer := 1;
+      A_Z : constant Integer := 2;
 
       procedure Rotate_X_Cw(Sbj : in out Full_Part) ; -- FIXME: ej impl än
       procedure Rotate_Y_Cw(Sbj : in out Full_Part) ;
