@@ -1,0 +1,32 @@
+# Part: 1
+Dimensions: 1x1x1
+ 1
+
+# Part: 2
+Dimensions: 1x1x1
+ 1
+
+# Part: 3
+Dimensions: 1x1x1
+ 1
+
+# Part: 4
+Dimensions: 1x1x1
+ 1
+
+# Part: 5
+Dimensions: 1x1x1
+ 1
+
+# Part: 6
+Dimensions: 1x1x1
+ 1
+
+# Part: 7
+Dimensions: 1x1x1
+ 1
+
+# Part: 8
+Dimensions: 1x1x1
+ 1
+

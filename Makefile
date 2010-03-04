@@ -3,10 +3,14 @@ MAKEFLAGS= -aL/home/TDDB22/lib/TJa/lib/Solaris -aI/home/TDDB22/lib/TJa/src/Solar
 
 clean: 
 	./cleaner  *~*.* *.ali *.o client server grafics *~
-server:
+
+server: FORCE
 	gnatmake ${MAKEFLAGS} src/server.adb -o server
-client:
+
+client: FORCE
 	gnatmake ${MAKEFLAGS} src/client.adb -o client
-grafics:
+
+grafics: FORCE
 	gnatmake ${MAKEFLAGS} src/grafics.adb -o grafics
 
+FORCE:

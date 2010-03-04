@@ -1,0 +1,44 @@
+# Part: 1
+Dimensions: 2x2x1
+ 1 1
+ 1 0
+
+# Part: 2
+Dimensions: 3x2x1
+ 1 1 1
+ 1 0 0
+
+# Part: 3
+Dimensions: 3x2x1
+ 1 1 1
+ 0 1 0
+
+# Part: 4
+Dimensions: 3x2x1
+ 1 1 0
+ 0 1 1
+
+# Part: 5
+Dimensions: 2x2x2
+ 1 1
+ 1 0
+
+ 1 0
+ 0 0
+
+# Part: 6
+Dimensions: 2x2x2
+ 1 1
+ 0 0
+
+ 1 0
+ 1 0
+
+# Part: 7
+Dimensions: 2x2x2
+ 1 1
+ 0 0
+
+ 0 1
+ 0 1
+
