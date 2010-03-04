@@ -1,5 +1,4 @@
 with Ada.Text_IO;                        use Ada.Text_IO;
---with Ada.Strings_Edit.Integer;           use Ada.Strings_Edit.Integer;
 with Ada.Command_Line;                   use Ada.Command_Line;
 with Ada.Exceptions;                     use Ada.Exceptions;
 with Ada.Strings;                        use Ada.Strings;
@@ -11,6 +10,7 @@ with TJa.Sockets;                        use TJa.Sockets;
 
 with Packets;                            use Packets;
 with Part_Types;                         use Part_Types;
+with Grafics;
 
 procedure Client is
 
@@ -58,7 +58,7 @@ procedure Client is
                          "Userdata not accepted by server");
          Close(Socket);
       end if;
-
+      Put(To_String(Text));
       Put_Line(Socket,Assemble_Packet(NICK_HEAD,To_Unbounded_String("Fistosaurus")));--  FixMes: Nick,
    end Login;
 ----------------------------------------------------------------------------------------
@@ -89,8 +89,9 @@ begin
 
       Get_Line(Socket,Text);
 
+      Put_Line("Hej");
       Case Packet_Head(Text) is
-         when 'D' =>
+         when PART_HEAD =>
             Input := Trim(Packet_Content(Text),Left);
             Ind := Integer'Value(To_string(Head(Input,Index(Input," "))));
             Delbeskrivning := new Full_Part_Array(1..Ind);
@@ -136,7 +137,7 @@ begin
             Put(To_String(Packet_Content(Text)));
             -- Quit
          when others =>
-           null;
+           Put("Fist");
            --FixMe: Error Flyn!
       end case;
    end loop;
