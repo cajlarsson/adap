@@ -10,33 +10,53 @@ package body Client_Manager is
       end Destroy;
 
       Me : Client_Type;
+      Packet : Unbounded_String;
 
    begin
-         Put_Line("Initated.");
+      --Put_Line("Initated.");
       accept Set(Self: Client_Type) do
          Me := Self;
-
       end Set;
 
       accept Run ;
 
-      Put_Line("Started: " & To_String(Me.Nick));
+      --Put_Line("Started: " & To_String(Me.Nick));
       if Login(Me.Socket) then
          Me.Nick := Get_Nick(Me.Socket);
+         Send_Parts(Me.Socket);
+         loop
+            Send_Figure(Me.Socket);
+            Packet := Get_Line(Me.Socket);
+            case Packet_Head(Packet) is
+               when Packets.ROTATION_HEAD =>
+                  Result_List.Insert(Me.Results,
+                                     New_Result(1, True));
+                  Send_Result(Me.Socket, "Passed");
+                  --Send_Result(Me.Socket, "Failed");
+               when Packets.FORFEIT_HEAD =>
+                  Result_List.Insert(Me.Results, New_Result(1, False));
+                  Send_Result(Me.Socket, "Ignored");
+               when Packets.FINISH_HEAD =>
+                  Send_Finish(Me.Socket, Result_List.Length(Me.Results), 1);
+                  delay 5.0;
+                  Close(Me.Socket);
+                  exit;
+               when others =>
+                  Put_Line(Me.Socket, "ERROR: Command out of order. Bye...");
+                  delay 5.0;
+                  Close(Me.Socket);
+                  exit;
+            end case;
+         end loop;
+      else
+         Close(Me.Socket);
       end if;
-
-      loop
-
-         select
-            accept Kill do
-               Destroy;
-            end Kill;
-
-         end select;
-      end loop;
    exception
       when others =>
-         Put("An error has occured.");
+         --Put("An error has occured.");
+         Put_Line(Me.Socket, "ERROR: An error has occured. Bye...");
+         delay 5.0;
+         Close(Me.Socket);
    end Client_Task;
 
    protected body Clients is
@@ -71,6 +91,38 @@ package body Client_Manager is
       end if;
       raise Unexpected_Head_Type;
    end Get_Nick;
+
+   procedure Send_Parts(Socket: in Socket_Type) is
+   begin
+      Put_Line(Socket, Assemble_Packet(Packets.PART_HEAD,
+                               To_Unbounded_String("2 2x2x1 1110 2x2x2 11000101")));
+   end Send_Parts;
+
+   procedure Send_Figure(Socket: in Socket_Type) is
+   begin
+      Put_Line(Socket, Assemble_Packet(Packets.FIGURE_HEAD,
+                               To_Unbounded_String("12 3x4x2 110101011111101111000001")));
+   end Send_Figure;
+
+   function New_Result(Figure_Id: Positive; Solved: Boolean) return Result_Type is
+     Result : Result_Type;
+   begin
+      Result.Figure_Id := Figure_Id;
+      Result.Solved := Solved;
+      return Result;
+   end New_Result;
+
+   procedure Send_Result(Socket: Socket_Type; Result: String) is
+   begin
+      Put_Line(Socket, Assemble_Packet(Packets.RESULT_HEAD,
+                               To_Unbounded_String(Result)));
+   end Send_Result;
+
+   procedure Send_Finish (Socket: Socket_Type; Solved: Natural; Place: Natural) is
+   begin
+      Put_Line(Socket, Assemble_Packet(Packets.FINISH_HEAD,
+                               To_Unbounded_String(To_String(Solved) &" "& To_String(Place))));
+   end Send_Finish;
 
    function Get_New_Client return Client_Type is
    New_Client : Client_Type;

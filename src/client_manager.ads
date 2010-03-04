@@ -2,7 +2,9 @@ with Ada.Text_IO;                        use Ada.Text_IO;
 with Ada.Strings.Unbounded;              use Ada.Strings.Unbounded;
 
 with Packets;                            use Packets;
+with Soma;                               use Soma;
 with Generic_Unsorted_List;
+with Misc;                               use Misc;
 
 with TJa.Sockets;                        use TJa.Sockets;
 
@@ -20,7 +22,7 @@ package Client_Manager is
    task type Client_Task is
       entry Set(Self : in Client_Type);
       entry Run;
-      entry Kill;
+      --entry Kill;
    end Client_Task;
 
    type Result_Type is
@@ -54,8 +56,6 @@ package Client_Manager is
          Self: Client_Type;
       end record;
 
-   function Login (Socket: Socket_Type) return Boolean;
-   function Get_Nick (Socket: Socket_Type) return Unbounded_String;
    function Get_New_Client return Client_Type;
 
    protected Clients is
@@ -66,5 +66,13 @@ package Client_Manager is
    end Clients;
 
 private
+
+   function Login (Socket: Socket_Type) return Boolean;
+   function Get_Nick (Socket: Socket_Type) return Unbounded_String;
+   procedure Send_Parts (Socket: in Socket_Type);
+   procedure Send_Figure (Socket: in Socket_Type);
+   procedure Send_Result (Socket: Socket_Type; Result: String);
+   procedure Send_Finish (Socket: Socket_Type; Solved: Natural; Place: Natural);
+   function New_Result (Figure_Id: Positive; Solved: Boolean) return Result_Type;
 
 end Client_Manager;
