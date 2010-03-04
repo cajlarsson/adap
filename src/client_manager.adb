@@ -12,22 +12,31 @@ package body Client_Manager is
       Me : Client_Type;
 
    begin
+         Put_Line("Initated.");
       accept Set(Self: Client_Type) do
          Me := Self;
+
       end Set;
+
+      accept Run ;
+
+      Put_Line("Started: " & To_String(Me.Nick));
+      if Login(Me.Socket) then
+         Me.Nick := Get_Nick(Me.Socket);
+      end if;
+
       loop
+
          select
             accept Kill do
                Destroy;
             end Kill;
-         or
-            accept Run do
-               if Login(Me.Socket) then
-                  Me.Nick := Get_Nick(Me.Socket);
-               end if;
-            end Run;
+
          end select;
       end loop;
+   exception
+      when others =>
+         Put("An error has occured.");
    end Client_Task;
 
    protected body Clients is
