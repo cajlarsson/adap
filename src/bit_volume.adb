@@ -87,6 +87,34 @@ package body Bit_Volume is
          return Result;
    end "not";
 
+   function "=" (BVT1,BVT2 :Bit_Volume_Type) return Boolean is
+   Result : Boolean := True;
+   begin
+      if BVT1.Last_Chunk_Length /= BVT2.Last_Chunk_Length
+        or BVT1.Chunks'first /= BVT2.Chunks'first
+        or BVT1.Chunks'last /= BVT2.Chunks'Last then
+         raise Not_Same_Size;
+      end if;
+
+
+      for I in 1..(bvt1.chunks'Last -1) loop
+         if  Bvt1.Chunks(I) /= Bvt2.Chunks(I)  then
+            Result := False;
+         end if;
+      end loop;
+
+      if (Bvt1.Chunks(Bvt1.Chunks'Last) and
+            (  Rest_Table(Bvt1.Last_Chunk_Length)))
+        /=
+           (Bvt2.Chunks(Bvt2.Chunks'Last) and
+              Rest_Table(Bvt2.Last_Chunk_Length))
+      then
+         Result := False;
+         end if;
+
+         return Result;
+   end "=";
+
    function empty (BVT : Bit_Volume_Type) return Boolean is
       Result : Boolean := True;
    begin
@@ -94,8 +122,13 @@ package body Bit_Volume is
          if  Bvt.Chunks(I) /= 0 then
             Result := False;
          end if;
-
       end loop;
+
+          if (Bvt.Chunks(Bvt.Chunks'Last) and
+               (  Rest_Table(Bvt.Last_Chunk_Length))) /= 0 then
+            Result := False;
+         end if;
+
       return Result;
    end Empty;
 
@@ -232,7 +265,6 @@ begin
                    72057594037927936,144115188075855872,288230376151711744,
                    576460752303423488,1152921504606846976,2305843009213693952,
                    4611686018427387904,9223372036854775808); -- Magic constants
-
 
    Rest_Table :=
         (2#00000000000000000000000000000000000000000000000000000000000000001#,

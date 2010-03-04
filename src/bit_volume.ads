@@ -15,6 +15,7 @@ package Bit_Volume is
    function "or" (BVT1,BVT2 :Bit_Volume_Type) return Bit_Volume_Type;
    function "xor" (BVT1,BVT2 :Bit_Volume_Type) return Bit_Volume_Type;
    function "not" (BVT :Bit_Volume_Type) return Bit_Volume_Type;
+   function "=" (BVT1,BVT2 :Bit_Volume_Type) return Boolean;
 
    function empty (BVT : Bit_Volume_Type) return Boolean;
    function Index(BVT : Bit_Volume_Type ; I : natural) return Bit;

@@ -36,9 +36,13 @@ package  Part_Types  is
    function Put(Packet : Full_Part) return Unbounded_String;
    procedure Put(Packet : Full_Part);
 
-
    function Index(Src: Full_Part; X,Y,Z : Integer) return Bit;
    procedure Set_Index( Dst : in out Full_Part;Src :Bit; X,Y,Z : in Integer);
+
+   function "and" (FP1,FP2 : Full_Part) return Full_Part; -- NOTE: Effects only BVTs
+   function "or" (FP1,FP2 : Full_Part) return Full_Part;  -- do not regard return values
+   function "not" (FP : Full_Part) return Full_Part;     -- as complete
+   function "=" (FP1,FP2 : Full_Part) return Boolean;
 
    function Dimensions(Src : Full_Part) return Offset_Type;
 
@@ -48,7 +52,7 @@ package  Part_Types  is
    procedure Grow(src : in out Full_Part; Dst :  out Full_Part);
 
 
-   Malformed_Input : exception;
+   Malformed_Input,Incompatible_Dimensions : exception;
 
 
 private

@@ -221,6 +221,58 @@ package body Part_Types is
                   +dst.Phenotype.X*(Y-1) + X,Src);
      end Set_Index;
 
+     function "and" (FP1,FP2 : Full_Part) return Full_Part is
+     Result : Full_Part;
+     begin
+        if Fp1.Phenotype.X /= Fp2.Phenotype.X
+          or Fp1.Phenotype.Y /= Fp2.Phenotype.Y
+          or Fp1.Phenotype.Z /= Fp2.Phenotype.Z then
+           raise Incompatible_Dimensions;
+        end if;
+        Result := Make(Fp1.Phenotype.X , Fp1.Phenotype.Y,
+                       Fp1.Phenotype.Z, Fp1.Genotype.Master);
+        Result.Phenotype.Bits := Fp1.Phenotype.Bits and Fp2.Phenotype.Bits;
+        return Result ;
+     end "and";
+
+     function "or" (FP1,FP2 : Full_Part) return Full_Part is
+     Result : Full_Part;
+     begin
+        if Fp1.Phenotype.X /= Fp2.Phenotype.X
+          or Fp1.Phenotype.Y /= Fp2.Phenotype.Y
+          or Fp1.Phenotype.Z /= Fp2.Phenotype.Z then
+           raise Incompatible_Dimensions;
+        end if;
+        Result := Make(Fp1.Phenotype.X , Fp1.Phenotype.Y,
+                       Fp1.Phenotype.Z, Fp1.Genotype.Master);
+        Result.Phenotype.Bits := Fp1.Phenotype.Bits or Fp2.Phenotype.Bits;
+        return Result ;
+     end "or";
+
+     function "not" (FP : Full_Part) return Full_Part is
+     Result : Full_Part;
+     begin
+        Result := Make(Fp.Phenotype.X , Fp.Phenotype.Y,
+                       Fp.Phenotype.z, Fp.Genotype.Master);
+        Result.Phenotype.Bits := not Fp.Phenotype.Bits;
+        Result.Genotype := Fp.Genotype;
+        return Result ;
+     end "not";
+
+
+     function "=" (FP1,FP2 : Full_Part) return Boolean is
+     begin
+        if Fp1.Phenotype.X /= Fp2.Phenotype.X
+          or Fp1.Phenotype.Y /= Fp2.Phenotype.Y
+          or Fp1.Phenotype.Z /= Fp2.Phenotype.Z then
+           raise Incompatible_Dimensions;
+        end if;
+
+        return Fp1.Phenotype.Bits = Fp2.Phenotype.Bits;
+     end "=";
+
+
+
      function Dimensions(Src : Full_Part) return Offset_Type is
      Result : Offset_Type;
      begin
@@ -231,9 +283,6 @@ package body Part_Types is
         return Result;
 
      end Dimensions;
-
-
-
 
    procedure Move_to(Sbj: in out  Full_Part; X,Y,Z :  in Integer) is
    begin
