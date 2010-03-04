@@ -295,6 +295,7 @@ package body Part_Types is
    procedure Rotate_To (Sbj: in out Full_Part ; X,Y,Z :in Integer) is
    N : Integer;
    begin
+ --     Put(Sbj);
       N := X;
       while N < 0 loop
          N := N +4;
@@ -344,7 +345,7 @@ package body Part_Types is
          N := N +4;
       end loop;
 
-      Put(N);
+      --Put(N);
 
 
       for I in 1..N loop
@@ -363,10 +364,10 @@ package body Part_Types is
             null;
       end case;
 
-
+--Put(Sbj);
    end Rotate_To;
 
-   procedure Grow(src : in out Full_Part; Dst :   out Full_Part) is
+   procedure Grow(src : in  Full_Part; Dst :   out Full_Part) is
    begin
       Clear(Dst.Phenotype.bits);
    --     New_Line;
@@ -542,5 +543,32 @@ package body Part_Types is
    end Rotate_Z_Cw;
 
 
+   procedure Clear_bits (Sbj : in out Full_Part) is
+   begin
+      Clear(Sbj.Phenotype.Bits);
+   end Clear_Bits;
+
+   function Rotate(Sbj : Full_Part) return Full_Part is
+   Result : Full_Part;
+   begin
+  --    Put(Sbj);
+      Result := Make(Sbj.Phenotype.X,Sbj.Phenotype.Y,Sbj.Phenotype.Z,0);
+--      New_Line;
+--      Put(Result);
+--      New_Line;
+
+      Result.Phenotype.Bits := sbj.phenotype.bits;
+      Rotate_To(Result,Sbj.Genotype.Rot.X,Sbj.Genotype.Rot.Y,Sbj.Genotype.Rot.Z);
+  --    Put (Result);
+
+
+      Result.Genotype := Sbj.Genotype;
+      return Result;
+   end Rotate;
+
+   function Empty (Sbj : in Full_Part) return Boolean is
+   begin
+   return Empty(Sbj.Phenotype.Bits);
+   end Empty;
 
 end Part_Types;

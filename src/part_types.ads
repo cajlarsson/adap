@@ -48,9 +48,11 @@ package  Part_Types  is
 
    procedure Move_to(Sbj: in out  Full_Part; X,Y,Z :  in Integer);
    procedure Rotate_To (Sbj: in out Full_Part ; X,Y,Z :in Integer); -- FIXME ej impl än
+   function Rotate(Sbj : Full_Part) return Full_Part;
 
-   procedure Grow(src : in out Full_Part; Dst :  out Full_Part);
-
+   procedure Grow(src : in Full_Part; Dst :  out Full_Part);
+   procedure Clear_bits (Sbj : in out Full_Part);
+   function Empty (Sbj : in Full_Part) return Boolean;
 
    Malformed_Input,Incompatible_Dimensions : exception;
 
@@ -77,10 +79,6 @@ private
          Genotype : Part_Type;
          Phenotype : Part_Volume;
       end record;
-
-      A_X : constant Integer := 0;
-      A_Y : constant Integer := 1;
-      A_Z : constant Integer := 2;
 
       procedure Rotate_X_Cw(Sbj : in out Full_Part) ; -- FIXME: ej impl än
       procedure Rotate_Y_Cw(Sbj : in out Full_Part) ;
