@@ -221,6 +221,19 @@ package body Part_Types is
                   +dst.Phenotype.X*(Y-1) + X,Src);
      end Set_Index;
 
+     function Dimensions(Src : Full_Part) return Offset_Type is
+     Result : Offset_Type;
+     begin
+        Result.X := Src.Phenotype.X;
+        Result.y := Src.Phenotype.y;
+        Result.z := Src.Phenotype.z;
+
+        return Result;
+
+     end Dimensions;
+
+
+
 
    procedure Move_to(Sbj: in out  Full_Part; X,Y,Z :  in Integer) is
    begin

@@ -12,6 +12,10 @@ package  Part_Types  is
 
    type Part_Array is array (Integer range <>) of Full_Part;
 
+   type Offset_type is  record
+      X,Y,Z: Integer;
+   end record;
+
    function Make return Full_part;
    function Make return Part_Volume;
    function Make return Part_Type;
@@ -36,6 +40,8 @@ package  Part_Types  is
    function Index(Src: Full_Part; X,Y,Z : Integer) return Bit;
    procedure Set_Index( Dst : in out Full_Part;Src :Bit; X,Y,Z : in Integer);
 
+   function Dimensions(Src : Full_Part) return Offset_Type;
+
    procedure Move_to(Sbj: in out  Full_Part; X,Y,Z :  in Integer);
    procedure Rotate_To (Sbj: in out Full_Part ; X,Y,Z :in Integer); -- FIXME ej impl än
 
@@ -49,10 +55,6 @@ private
 
       type Rotation_type is  record
       X,Y,Z : Integer;
-      end record;
-
-      type Offset_type is  record
-         X,Y,Z: Integer;
       end record;
 
       type Part_Type_Base  is record
