@@ -52,6 +52,39 @@ package body Part_Types is
       Return Dst;
    end Get;
 
+   procedure Decorate(Sbj : in out Full_Part; Data : in Unbounded_String) is
+      Work : Unbounded_String;
+
+      function First_Num(Str : Unbounded_String) return Integer is
+      begin
+         return Integer'Value(To_String(Trim(Head(Str,
+                                                  Index(Str, " "))
+                                               ,Ada.Strings.Left)));
+      end First_Num;
+
+      procedure Del_1_Word(Sbj : in out Unbounded_String) is
+      begin
+          Sbj := Tail(Sbj,Length(Sbj)-Index(Sbj," "));
+      end Del_1_Word;
+
+   begin
+      Work := Trim(Data,Ada.Strings.Left) &" ";
+      Del_1_Word(Work);
+      Sbj.Genotype.Rot.X := First_Num(Work);
+      Del_1_Word(Work);
+      Sbj.Genotype.Rot.Y := First_Num(Work);
+      Del_1_Word(Work);
+      Sbj.Genotype.Rot.Z := First_Num(Work);
+      Del_1_Word(Work);
+      Sbj.Genotype.Off.X := First_Num(Work);
+      Del_1_Word(Work);
+      Sbj.Genotype.Off.Y := First_Num(Work);
+      Del_1_Word(Work);
+      Sbj.Genotype.Off.Z := First_Num(Work);
+   end Decorate;
+
+
+
    procedure Put(Packet : in  Full_Part; Src : out Unbounded_string) is
       function Trim1(Src :Unbounded_String) return Unbounded_String is
       begin
@@ -71,11 +104,14 @@ package body Part_Types is
         & ' ' &
         Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Rot.Z)))
         & ' ' &
-        Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Off.X)))
+        Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Off.X
+                                               + Packet.Genotype.Roff.x)))
         & ' ' &
-        Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Off.Y)))
+        Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Off.Y
+                                               + Packet.Genotype.Roff.Y)))
         & ' ' &
-        Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Off.Y)));
+        Trim1(to_Unbounded_String(Integer'Image( Packet.Genotype.Off.Z
+                                               + Packet.Genotype.Roff.Z)));
 
    end Put;
 
@@ -142,6 +178,9 @@ package body Part_Types is
       Result.Off.X := 0;
       Result.Off.Y := 0;
       Result.Off.Z := 0;
+      Result.Roff.X := 0;
+      Result.Roff.Y := 0;
+      Result.Roff.Z := 0;
       Result.Master := 0;
       return Result;
    end Make;

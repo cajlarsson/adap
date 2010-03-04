@@ -32,6 +32,8 @@ package  Part_Types  is
    procedure Get(Src :in Unbounded_String; Id :integer ; Packet :out Full_Part);
    function Get(Src : Unbounded_String; Id :integer)return Full_Part;
 
+   procedure Decorate(Sbj : in out Full_Part; Data : in Unbounded_String);
+
    procedure Put(Packet : in  Full_Part; Src : out Unbounded_string);
    function Put(Packet : Full_Part) return Unbounded_String;
    procedure Put(Packet : Full_Part);
