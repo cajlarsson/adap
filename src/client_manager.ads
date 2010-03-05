@@ -4,6 +4,7 @@ with Ada.Strings.Unbounded;              use Ada.Strings.Unbounded;
 with Packets;                            use Packets;
 with Soma;                               use Soma;
 with Generic_Unsorted_List;
+with Generic_Sorted_List;
 with Misc;                               use Misc;
 with Part_Types;                         use Part_Types;
 
@@ -36,9 +37,9 @@ package Client_Manager is
    function Get_Figure_Id (Item: in Result_Type) return Positive;
    procedure Put (Item: in Result_Type);
    package Result_List is
-      new Generic_Unsorted_List (Data_Type => Result_Type,
-                                 Key_Type => Positive,
-                                 Get_Key => Get_Figure_Id);
+      new Generic_Sorted_List (Data_Type => Result_Type,
+                               Key_Type => Positive,
+                               Get_Key => Get_Figure_Id);
 
    type Client_Element_Type is
       record
@@ -82,7 +83,7 @@ private
    function Login (Socket: Socket_Type) return Boolean;
    function Get_Nick (Socket: Socket_Type) return Unbounded_String;
    procedure Send_Parts (Socket: in Socket_Type);
-   procedure Send_Figure (Socket: in Socket_Type);
+   procedure Send_Figure (Socket: in Socket_Type; Figure_Id : Natural);
    procedure Send_Result (Socket: Socket_Type; Result: String);
    procedure Send_Finish (Socket: Socket_Type; Solved: Natural; Place: Natural);
    function New_Result (Figure_Id: Positive; Solved: Boolean) return Result_Type;

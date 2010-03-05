@@ -11,6 +11,25 @@ package body Misc is
       Put(To_String(Item));
    end Put;
 
+   procedure Get_Line (Item: out Unbounded_String) is
+      Buffer: String(1..100);
+      Length: Positive := 100;
+   begin
+      -- This is needed because GNAT i broken.
+      Item := To_Unbounded_String("");
+      while Length = 100 loop
+         Get_Line(Buffer, Length);
+         Item := Item & To_Unbounded_String(Buffer(1..Length));
+      end loop;
+   end Get_Line;
+
+   function Get_Line return Unbounded_String is
+      Temp : Unbounded_String;
+   begin
+      Get_Line(Temp);
+      return Temp;
+   end Get_Line;
+
    function Get_Dec( Parts : Part_Array; Data: Unbounded_String) return Part_Array is
       Result : Part_Array(Parts'Range);
       Work : Unbounded_String;

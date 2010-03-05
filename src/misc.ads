@@ -11,6 +11,9 @@ package Misc is
 
    procedure Put (Item: in Unbounded_String);
 
+   procedure Get_Line (Item: out Unbounded_String);
+   function Get_Line return Unbounded_String;
+
    function Get_Dec( Parts : Part_Array; Data: Unbounded_String)
                    return Part_Array;
    procedure Del_1_Word(Sbj : in out Unbounded_String);

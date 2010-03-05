@@ -11,6 +11,7 @@ package body Client_Manager is
 
       Me : Client_Type;
       Packet : Unbounded_String;
+      Current_Figure_Id : Natural := 1;
 
    begin
       --Put_Line("Initated.");
@@ -24,18 +25,27 @@ package body Client_Manager is
       if Login(Me.Socket) then
          Me.Nick := Get_Nick(Me.Socket);
          Send_Parts(Me.Socket);
-         loop
-            Send_Figure(Me.Socket);
+
+         while Figures.Exist(Current_Figure_Id) Loop
+            Send_Figure(Me.Socket, Current_Figure_Id);
             Packet := Get_Line(Me.Socket);
             case Packet_Head(Packet) is
                when Packets.ROTATION_HEAD =>
-                  Result_List.Insert(Me.Results,
-                                     New_Result(1, True));
-                  Send_Result(Me.Socket, "Passed");
-                  --Send_Result(Me.Socket, "Failed");
+                  if Verify(Get_Dec(Parts.Get,Packet_Content(Packet)),
+                            Figures.Get(Current_Figure_Id)) then
+                     Result_List.Insert(Me.Results,
+                                        New_Result(Current_Figure_Id, True));
+                     Send_Result(Me.Socket, "Passed");
+                  else
+                     Result_List.Insert(Me.Results,
+                                        New_Result(Current_Figure_Id, False));
+                     Send_Result(Me.Socket, "Failed");
+                  end if;
+                  Current_Figure_Id := Current_Figure_Id + 1;
                when Packets.FORFEIT_HEAD =>
                   Result_List.Insert(Me.Results, New_Result(1, False));
                   Send_Result(Me.Socket, "Ignored");
+                  Current_Figure_Id := Current_Figure_Id + 1;
                when Packets.FINISH_HEAD =>
                   Send_Finish(Me.Socket, Result_List.Length(Me.Results), 1);
                   delay 5.0;
@@ -48,6 +58,9 @@ package body Client_Manager is
                   exit;
             end case;
          end loop;
+         Send_Finish(Me.Socket, Result_List.Length(Me.Results), 1);
+         delay 5.0;
+         Close(Me.Socket);
       else
          Close(Me.Socket);
       end if;
@@ -97,7 +110,8 @@ package body Client_Manager is
    protected body Figures is
       function Get(Id : Natural) return Unbounded_String is
       begin
-         return To_Unbounded_String(Figures.all(Id));
+         return To_Unbounded_String(To_String(Id))
+           &" "& To_Unbounded_String(Figures.all(Id));
       end Get;
 
       function Get(Id : Natural) return Full_Part is
@@ -141,14 +155,12 @@ package body Client_Manager is
 
    procedure Send_Parts(Socket: in Socket_Type) is
    begin
-      Put_Line(Socket, Assemble_Packet(Packets.PART_HEAD,
-                               To_Unbounded_String("2 2x2x1 1110 2x2x2 11000101")));
+      Put_Line(Socket, Assemble_Packet(Packets.PART_HEAD,Parts.Get));
    end Send_Parts;
 
-   procedure Send_Figure(Socket: in Socket_Type) is
+   procedure Send_Figure(Socket: in Socket_Type; Figure_Id : Natural) is
    begin
-      Put_Line(Socket, Assemble_Packet(Packets.FIGURE_HEAD,
-                               To_Unbounded_String("12 3x4x2 110101011111101111000001")));
+      Put_Line(Socket, Assemble_Packet(Packets.FIGURE_HEAD,Figures.Get(Figure_Id)));
    end Send_Figure;
 
    function New_Result(Figure_Id: Positive; Solved: Boolean) return Result_Type is
