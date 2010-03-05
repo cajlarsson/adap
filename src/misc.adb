@@ -28,4 +28,14 @@ package body Misc is
    return Result;
    end Get_Dec;
 
+   procedure Del_1_Word(Sbj : in out Unbounded_String) is
+   begin
+      Sbj := Tail(Sbj,Length(Sbj)-Index(Sbj," "));
+   end Del_1_Word;
+
+   function First_word(Str : Unbounded_String) return Unbounded_String is
+   begin
+      return Trim(Head(Str, Index(Str, " ")) ,Ada.Strings.Left);
+   end First_Word;
+
 end Misc;

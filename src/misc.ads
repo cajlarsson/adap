@@ -13,5 +13,8 @@ package Misc is
 
    function Get_Dec( Parts : Part_Array; Data: Unbounded_String)
                    return Part_Array;
+   procedure Del_1_Word(Sbj : in out Unbounded_String);
+
+   function First_word(Str : Unbounded_String) return Unbounded_String;
 
 end Misc;

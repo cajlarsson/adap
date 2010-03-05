@@ -10,12 +10,14 @@ with TJa.Sockets;                        use TJa.Sockets;
 
 with Packets;                            use Packets;
 with Part_Types;                         use Part_Types;
+with Misc;                               use Misc;
+with Soma;                               use Soma;
 with Grafics;
 
 procedure Client is
 
-   type Full_Part_Array is array (Integer range <>) of Full_Part;
-   type FP_A is access Full_Part_Array;
+  -- type Full_Part_Array is array (Integer range <>) of Full_Part;
+   type FP_A is access all Part_Array;
 
    Socket : Socket_Type;
    Port : Natural;
@@ -58,17 +60,13 @@ procedure Client is
                          "Userdata not accepted by server");
          Close(Socket);
       end if;
-      Put(To_String(Text));
+    --  Put(To_String(Text));
       Put_Line(Socket,Assemble_Packet(NICK_HEAD,To_Unbounded_String("Fistosaurus")));--  FixMes: Nick,
+      --
    end Login;
 ----------------------------------------------------------------------------------------
 
-   function Solver(Lösis : Full_Part; Delbeskrivning : FP_A)return FP_A is
-   begin
-     return null;
-      end Solver;
-----------------------------------------------------------------------------------------
---procedure Haz_Draz
+
 
 begin
 
@@ -87,34 +85,48 @@ begin
 
    While true loop                       --FixMe: Truue? ORLY?
 
+      Text:=To_Unbounded_String("");
       Get_Line(Socket,Text);
 
-      Put_Line("Hej");
+--
       Case Packet_Head(Text) is
+
          when PART_HEAD =>
             Input := Trim(Packet_Content(Text),Left);
+       --       Put(Input);
+       --              New_Line;
             Ind := Integer'Value(To_string(Head(Input,Index(Input," "))));
-            Delbeskrivning := new Full_Part_Array(1..Ind);
+            Put(Ind);
+            New_Line;
+            Delbeskrivning := new Part_Array(1..Ind);
             Input := Delete(Input,1,Index(Input," "));
+            Input := Trim(Input,Ada.Strings.Left);
+            Input := Input & " ";
+--              Put(Input);
+--              New_Line;
+
 
             for I in 1..Ind loop
-               T2 := Tail(Input,Length(Input) - Index(Input," "));
-               I2 := Index(T2," ");
-               T1 := Head(Input,I2);
-               Delbeskrivning(I):= Get(T1,I);
-               Input :=Tail(T2,Length(T2) - Index(T2," "));
-               end loop;
+               T1 := First_Word(Input);
+               Del_1_Word(Input);
+               T1 := T1 &  First_Word(Input);
+               T1 := Trim(T1,Ada.Strings.Right);
+               Del_1_Word(Input);
+               Delbeskrivning(I):= Get(t1,I);
+            end loop;
 
             -- FixMe: Testing
-         when 'F' =>
+         when FIGURE_HEAD =>
+            Put_Line("hej");
             Input := Trim(Packet_Content(Text),Left);
             Ind := Integer'Value(To_string(Head(Input,Index(Input," "))));
             Lösis := Get(Delete(Input,1,Index(Input," ")),Ind);
 
             Text := To_Unbounded_String(Integer'Image(Delbeskrivning'Last));
             Text := Trim(Text,Left);
-            Delbeskrivning := Solver(Lösis,Delbeskrivning);
-            for I in Delbeskrivning'Range loop
+            Delbeskrivning.all := Soma.Solve(Delbeskrivning.all,Lösis);
+
+            for I in Delbeskrivning'range loop
                Text := Text & " ";
                Text :=Text & Put(Delbeskrivning(I));
             end loop;
@@ -129,15 +141,19 @@ begin
                when 'r' =>
                  Put_Line("We gave up and succeded at it!");
                when others =>
-                 Put_Line("Garrdak");
+                  --          Put_Line("Garrdak");
+                  null;
             end case;
 
             -- FixMe: Better text
          when 'Q' =>
-            Put(To_String(Packet_Content(Text)));
+            Put_Line(To_String(Packet_Content(Text)));
             -- Quit
          when others =>
-           Put("Fist");
+            Put(Packet_Head(Text));
+            New_Line;
+            Put_Line(To_String(Text));
+            Put_Line("Fist");
            --FixMe: Error Flyn!
       end case;
    end loop;
