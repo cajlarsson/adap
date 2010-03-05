@@ -4,7 +4,7 @@ with Ada.Command_Line;                   use Ada.Command_Line;
 with Ada.Exceptions;                     use Ada.Exceptions;
 with Ada.Strings.Unbounded;              use Ada.Strings.Unbounded;
 
-with Packets;                            use Packets;
+with Part_Convert;                       use Part_Convert;
 with Client_Manager;                     use Client_Manager;
 
 with TJa.Sockets;                        use TJa.Sockets;
@@ -29,15 +29,21 @@ procedure Server is
       end loop;
    end Accept_Pool;
 
+   F_In : File_Type;
+
 begin
    if Argument_Count /= 1 then
       Raise_Exception(Constraint_Error'Identity,
                       "Usage: " & Command_Name & " port");
    end if;
 
+   Open(F_In, In_File, "./data/soma_parts.txt");
+
+
+   Put(Part_From_File_To_Packet(F_In));
+   Put(Part_From_File_To_Packet(F_In));
+   Put(Part_From_File_To_Packet(F_In));
+
    Accept_Pool(Natural'Value(Argument(1)));
 
 end Server;
-
-
-

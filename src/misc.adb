@@ -6,6 +6,11 @@ package body Misc is
       return Trim(Text, Both);
    end To_String;
 
+   procedure Put (Item: in Unbounded_String) is
+   begin
+      Put(To_String(Item));
+   end Put;
+
    function Get_Dec( Parts : Part_Array; Data: Unbounded_String) return Part_Array is
       Result : Part_Array(Parts'Range);
       Work : Unbounded_String;

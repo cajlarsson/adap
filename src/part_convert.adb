@@ -1,39 +1,80 @@
 package body Part_Convert is
 
-   function Part_From_File_To_Packet(Input_Type : S_In) return Unbounded_String;
+   function Part_From_File_To_Packet (F_In : File_Type) return Part_Type is
+   begin
+      return Get_Part(F_In);
+   end Part_From_File_To_Packet;
 
-   function Figure_From_File_To_Packet(Input_Type : S_In) return Unbounded_String;
+   function Figure_From_File_To_Packet (F_In : File_Type) return Part_Type is
+   begin
+      return Get_Part(F_In);
+   end Figure_From_File_To_Packet;
 
-   function Get(Input_Type : S_In) return Bit_Type is
+   procedure Put (Item: Part_Type) is
+   begin
+      Put("Id: " & To_String(Item.Id));
+      New_Line;
+      Put("Dimension: ");
+      Put(Item.Dim);
+      New_Line;
+      Put("Data: ");
+      Put(Item.Data);
+      New_Line;
+   end Put;
+
+   function Get_Bit (S_In : Input_Type) return String is
       C : Character;
    begin
       loop
-         Get
-      end loop;
-   end Get;
-
-   function Get_Size_From_Dim(D : String) return Natural is
-      X, Y, Z, P1, P2 : Natural := 1;
-   begin
-      for I in 1..D'Last loop
-         if (D(1));
+         Get(S_In, C);
+         if C = '0' or C = '1' then
+            return ""&C;
          end if;
       end loop;
-   end Get_Size_From_Dim;
+   end Get_Bit;
 
-   function Get_Dimension(Input_Type: S_In) return Unbounded_String is
-      Re : constant Regexp :=
-        Compile ("Dimensions: [0-9]x[0-9]x[0-9]", Glob => True);
+   function Get_Part_Data (I: Input_Type; X: Natural; Y: Natural; Z: Natural) return Unbounded_String is
+      Res: Unbounded_String;
+   begin
+      for I_Z in 1..Z loop
+         for I_Y in 1..Y loop
+            for I_X in 1..X loop
+               Res := Res & To_Unbounded_String(Get_Bit(I));
+            end loop;
+            Skip_Line(I);
+         end loop;
+         Skip_Line(I);
+      end loop;
+      return Res;
+   end Get_Part_Data;
+
+   function Get_Part (I : Input_Type) return Part_Type is
+      Re_Part_Cap : constant Pattern_Matcher :=
+        Compile ("# Part: ([0-9]{1,2})");
+      Re_Dim : constant Pattern_Matcher :=
+        Compile ("Dimensions: [0-9]{1,2}x[0-9]{1,2}x[0-9]{1,2}");
+      Re_Dim_Cap : constant Pattern_Matcher :=
+        Compile ("Dimensions: ([0-9]{1,2})x([0-9]{1,2})x([0-9]{1,2})");
+      Matches_Dim : Match_Array(1..3);
+      Matches_Part : Match_Array(1..1);
       Row : String(1..ROW_LENGTH);
       Row_Len : Integer;
-      Res : Unbounded_String;
+      Res : Part_Type;
+      X,Y,Z: Natural := 0;
    begin
-      Get_Line(S_In, Row, Row_Len);
-
-      if Match(Ds(1..Row_Len), Re) then
-         Res := To_Unbounded_String(Row(12..Row_Len));
-
-      end if;
-   end Get_Dimenstion;
+      Get_Line(I, Row, Row_Len);
+      Match(Re_Part_Cap, Row(1..Row_Len), Matches_Part);
+      Res.Id := Integer'Value(Row(Matches_Part(1).First .. Matches_Part(1).Last));
+      Get_Line(I, Row, Row_Len);
+      --if Match(Re_Dim, Row(1..Row_Len)) then
+      Match(Re_Dim_Cap, Row(1..Row_Len), Matches_Dim);
+      X := Integer'Value(Row(Matches_Dim(1).First .. Matches_Dim(1).Last));
+      Y := Integer'Value(Row(Matches_Dim(2).First .. Matches_Dim(2).Last));
+      Z := Integer'Value(Row(Matches_Dim(3).First .. Matches_Dim(3).Last));
+      Res.Data := Get_Part_Data(I,X,Y,Z);
+      Res.Dim := To_Unbounded_String(To_String(X) &"x"& To_String(Y) &"x"& To_String(Z));
+      --end if;
+      return Res;
+   end Get_Part;
 
 end Part_Convert;
