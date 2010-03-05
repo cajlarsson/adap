@@ -20,10 +20,12 @@ procedure Server is
       Initiate(Listener,Port);
       loop
          New_Client := Get_New_Client;
-         Put_Line("Listening for connection...");
+         --Put_Line("Listening for connection...");
+         Logger.Put("Listening for connection...");
          Wait_For_Connection(Listener,New_Client.Socket);
-   --      Put(Ascii.Cr);
-         Put_Line("Client connected...");
+         --Put(Ascii.Cr);
+         --Put_Line("Client connected...");
+         Logger.Put("Client connected...");
          New_Client.Nick := To_Unbounded_String("Client" & Integer'Image(Id));
          New_Client.T.Run;
          Clients.Insert(New_Client);
@@ -45,6 +47,8 @@ begin
    Open(F_In, In_File, "./data/soma_parts.txt");
    Parts.Set(From_File_To_Part_Array(F_In));
    Close(F_In);
+
+   Logger.Put("Server started on port: " & Argument(1));
 
    --Put(Figures.Get(1));
    --Put(Parts.Get);

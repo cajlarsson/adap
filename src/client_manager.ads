@@ -1,4 +1,5 @@
 with Ada.Text_IO;                        use Ada.Text_IO;
+with Ada.Integer_Text_IO;                use Ada.Integer_Text_IO;
 with Ada.Strings.Unbounded;              use Ada.Strings.Unbounded;
 
 with Packets;                            use Packets;
@@ -8,6 +9,7 @@ with Generic_Sorted_List;
 with Misc;                               use Misc;
 with Part_Types;                         use Part_Types;
 
+with Tja.Calendar;                       use Tja.Calendar;
 with TJa.Sockets;                        use TJa.Sockets;
 
 package Client_Manager is
@@ -21,10 +23,19 @@ package Client_Manager is
       --entry Kill;
    end Client_Task;
 
+   protected Logger is
+      procedure Init;
+      procedure Put(Event: Unbounded_String);
+      procedure Put(Event: String);
+   private
+      Log : File_Type;
+   end Logger;
+
    type Result_Type is
       record
          Figure_Id: Positive;
          Solved: Boolean;
+         Result: Unbounded_String;
       end record;
 
    function Get_Socket (Item: in Client_Type) return Socket_Type;
@@ -86,6 +97,8 @@ private
    procedure Send_Figure (Socket: in Socket_Type; Figure_Id : Natural);
    procedure Send_Result (Socket: Socket_Type; Result: String);
    procedure Send_Finish (Socket: Socket_Type; Solved: Natural; Place: Natural);
-   function New_Result (Figure_Id: Positive; Solved: Boolean) return Result_Type;
+   function New_Result (Figure_Id: Positive;
+                        Solved: Boolean;
+                        Result: Unbounded_String) return Result_Type;
 
 end Client_Manager;

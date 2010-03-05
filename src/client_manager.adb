@@ -24,45 +24,68 @@ package body Client_Manager is
       --Put_Line("Started: " & To_String(Me.Nick));
       if Login(Me.Socket) then
          Me.Nick := Get_Nick(Me.Socket);
+         Logger.Put("Nick set to: "& To_String(Me.Nick));
          Send_Parts(Me.Socket);
+         Logger.Put("Parts sent to "& To_String(Me.Nick));
 
          while Figures.Exist(Current_Figure_Id) Loop
             Send_Figure(Me.Socket, Current_Figure_Id);
+            Logger.Put("Figure #"& To_String(Current_Figure_Id) &" sent to "& To_String(Me.Nick));
             Packet := Get_Line(Me.Socket);
             case Packet_Head(Packet) is
                when Packets.ROTATION_HEAD =>
                   if Verify(Get_Dec(Parts.Get,Packet_Content(Packet)),
                             Figures.Get(Current_Figure_Id)) then
                      Result_List.Insert(Me.Results,
-                                        New_Result(Current_Figure_Id, True));
+                                        New_Result(Current_Figure_Id,
+                                                   True,
+                                                   To_Unbounded_String("Passed")));
                      Send_Result(Me.Socket, "Passed");
+                     Logger.Put("Client "& To_String(Me.Nick) &" sent result for figure #"
+                                  & To_String(Current_Figure_Id) &", Passed"
+                                  &", "& To_String(Packet_Content(Packet)));
                   else
                      Result_List.Insert(Me.Results,
-                                        New_Result(Current_Figure_Id, False));
+                                        New_Result(Current_Figure_Id,
+                                                   False,
+                                                   To_Unbounded_String("Failed")));
                      Send_Result(Me.Socket, "Failed");
+                     Logger.Put("Client "& To_String(Me.Nick) &" sent result for figure #"
+                                  & To_String(Current_Figure_Id) &", Failed"
+                                  &", "& To_String(Packet_Content(Packet)));
                   end if;
                   Current_Figure_Id := Current_Figure_Id + 1;
                when Packets.FORFEIT_HEAD =>
-                  Result_List.Insert(Me.Results, New_Result(1, False));
+                  Result_List.Insert(Me.Results,
+                                     New_Result(Current_Figure_Id,
+                                                False,
+                                                To_Unbounded_String("Ignored")));
                   Send_Result(Me.Socket, "Ignored");
+                  Logger.Put("Client "& To_String(Me.Nick) &" sent result for figure #"
+                               & To_String(Current_Figure_Id) &", Ignored"
+                               &", "& To_String(Packet_Content(Packet)));
                   Current_Figure_Id := Current_Figure_Id + 1;
                when Packets.FINISH_HEAD =>
                   Send_Finish(Me.Socket, Result_List.Length(Me.Results), 1);
+                  Logger.Put("Client "& To_String(Me.Nick) &" disconnected.");
                   delay 5.0;
                   Close(Me.Socket);
                   exit;
                when others =>
                   Put_Line(Me.Socket, "ERROR: Command out of order. Bye...");
+                  Logger.Put("Client "& To_String(Me.Nick) &" ERROR: "& To_String(Packet));
                   delay 5.0;
                   Close(Me.Socket);
                   exit;
             end case;
          end loop;
          Send_Finish(Me.Socket, Result_List.Length(Me.Results), 1);
+         Logger.Put("Client "& To_String(Me.Nick) &" disconnected.");
          delay 5.0;
          Close(Me.Socket);
       else
          Close(Me.Socket);
+         Logger.Put("Login error.");
       end if;
    exception
       when others =>
@@ -71,6 +94,31 @@ package body Client_Manager is
          delay 5.0;
          Close(Me.Socket);
    end Client_Task;
+
+   protected body Logger is
+      procedure Init is
+      begin
+         begin
+            Open(Log, Append_File, "log.log");
+         exception
+            when Ada.Text_IO.Name_Error =>
+               Create(Log, Out_File, "log.log");
+         end;
+      end Init;
+
+      procedure Put(Event: String) is
+      begin
+         Init;
+         Put(Log, To_String(Get_Date(Clock)) &" "& To_String(Get_Time(Clock)) &" ");
+         Put_Line(Log, Event);
+         Close(Log);
+      end Put;
+
+      procedure Put(Event: Unbounded_String) is
+      begin
+         Put(To_String(Event));
+      end Put;
+   end Logger;
 
    protected body Clients is
       procedure Insert(Item: in Client_Type) is
@@ -163,12 +211,15 @@ package body Client_Manager is
       Put_Line(Socket, Assemble_Packet(Packets.FIGURE_HEAD,Figures.Get(Figure_Id)));
    end Send_Figure;
 
-   function New_Result(Figure_Id: Positive; Solved: Boolean) return Result_Type is
-     Result : Result_Type;
+   function New_Result (Figure_Id: Positive;
+                        Solved: Boolean;
+                        Result: Unbounded_String) return Result_Type is
+     Res : Result_Type;
    begin
-      Result.Figure_Id := Figure_Id;
-      Result.Solved := Solved;
-      return Result;
+      Res.Figure_Id := Figure_Id;
+      Res.Solved := Solved;
+      Res.Result := Result;
+      return Res;
    end New_Result;
 
    procedure Send_Result(Socket: Socket_Type; Result: String) is
@@ -201,6 +252,7 @@ package body Client_Manager is
    procedure Put (Item: in Client_Type) is
    begin
       Put_Line(To_String(Item.Nick));
+      Result_List.Put(Item.Results);
    end Put;
 
    function Get_Figure_Id (Item: in Result_Type) return Positive is
@@ -210,7 +262,10 @@ package body Client_Manager is
 
    procedure Put (Item: in Result_Type) is
    begin
-      null;
+      Put(Item.Figure_Id);
+      Put(" ");
+      Put(Item.Result);
+      New_Line;
    end Put;
 
 end Client_Manager;
