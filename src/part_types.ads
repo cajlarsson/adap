@@ -11,6 +11,7 @@ package  Part_Types  is
    type Full_Part is access Full_Part_Base;
 
    type Part_Array is array (Integer range <>) of Full_Part;
+   type Part_Array_Access is access Part_Array;
 
    type Offset_type is  record
       X,Y,Z: Integer;
@@ -32,11 +33,20 @@ package  Part_Types  is
    procedure Get(Src :in Unbounded_String; Id :integer ; Packet :out Full_Part);
    function Get(Src : Unbounded_String; Id :integer)return Full_Part;
 
+   function Get_Id(Item: Full_Part) return Integer;
+
    procedure Decorate(Sbj : in out Full_Part; Data : in Unbounded_String);
 
    procedure Put(Packet : in  Full_Part; Src : out Unbounded_string);
    function Put(Packet : Full_Part) return Unbounded_String;
    procedure Put(Packet : Full_Part);
+
+   procedure Put_Phenotypes(Packets : in Part_Array;
+                            Dst : out Unbounded_String);
+   function  To_Unbounded_String(Packets : in Part_Array) return  Unbounded_String;
+   function  To_Unbounded_String(Packet : in Full_Part) return  Unbounded_String;
+
+   procedure Put(Item : Part_Array);
 
    function Index(Src: Full_Part; X,Y,Z : Integer) return Bit;
    procedure Set_Index( Dst : in out Full_Part;Src :Bit; X,Y,Z : in Integer);
@@ -52,7 +62,7 @@ package  Part_Types  is
    procedure Rotate_To (Sbj: in out Full_Part ; X,Y,Z :in Integer); -- FIXME ej impl än
    function Rotate(Sbj : Full_Part) return Full_Part;
 
-   procedure Grow(src : in Full_Part; Dst :  out Full_Part);
+   procedure Grow(src : in Full_Part; Dst : in out Full_Part);
    procedure Clear_bits (Sbj : in out Full_Part);
    function Empty (Sbj : in Full_Part) return Boolean;
 

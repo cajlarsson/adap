@@ -3,6 +3,7 @@ with Ada.Unchecked_Deallocation;
 with GNAT.RegExp;                        use GNAT.RegExp;
 
 with Ada.Integer_Text_Io;                use Ada.Integer_Text_Io;
+with Misc;                               use Misc;
 
  --debug
 with Ada.Text_Io; use Ada.Text_Io;
@@ -44,6 +45,11 @@ package body Part_Types is
       --      Put_Line(To_String(Data));
       Packet.Phenotype.Bits := Get(Data);
    end Get;
+
+   function Get_Id(Item: Full_Part) return Integer is
+   begin
+      return Item.Genotype.Master;
+   end Get_Id;
 
    function Get(Src : Unbounded_String; Id :integer)return Full_Part is
    Dst : Full_Part;
@@ -146,6 +152,39 @@ package body Part_Types is
       New_Line;
       Put("Bits: ");
       Put(Packet.Phenotype.Bits);
+   end Put;
+
+   procedure Put_Phenotypes(Packets : in Part_Array;
+                            Dst : out Unbounded_String) is
+   begin
+      Dst := To_Unbounded_String(Packets);
+   end Put_Phenotypes;
+
+   function To_Unbounded_String(Packet : in Full_Part) return Unbounded_String is
+      R : Unbounded_String;
+   begin
+      R := To_Unbounded_String(To_String(Packet.Phenotype.X));
+      R := R & "x" & To_Unbounded_String(To_String(Packet.Phenotype.y));
+      R := R & "x" & To_Unbounded_String(To_String(Packet.Phenotype.z));
+      R := R & " " & Put(Packet.Phenotype.Bits);
+      return R;
+   end To_Unbounded_String;
+
+   function To_Unbounded_String(Packets : in Part_Array) return  Unbounded_String is
+      Result : Unbounded_String;
+   begin
+      Result := To_Unbounded_String(To_String(Packets'Last)) ;
+
+      for I in Packets'Range loop
+         Result := Result & " " & To_Unbounded_String(Packets(I));
+      end loop;
+      return Result;
+
+   end To_Unbounded_String;
+
+   procedure Put(Item : Part_Array) is
+   begin
+      Put(To_Unbounded_String(Item));
    end Put;
 
    function Make return Full_Part is
@@ -406,7 +445,7 @@ package body Part_Types is
 --Put(Sbj);
    end Rotate_To;
 
-   procedure Grow(src : in  Full_Part; Dst :   out Full_Part) is
+   procedure Grow(src : in Full_Part; Dst : in out Full_Part) is
    begin
       Clear(Dst.Phenotype.bits);
    --     New_Line;

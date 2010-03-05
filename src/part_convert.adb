@@ -1,16 +1,31 @@
 package body Part_Convert is
 
-   function Part_From_File_To_Packet (F_In : File_Type) return Part_Type is
+   function From_File_To_Part_Array (F_In : Input_Type) return Part_Array is
+      Res : Part_Array_Access;
+      List : Part_List.List_Type;
    begin
-      return Get_Part(F_In);
-   end Part_From_File_To_Packet;
+      List := Get_Part_List(F_In);
+      Res := new Part_Array(1..Part_List.Length(List));
+      for I in 1..Part_List.Length(List) loop
+         Res(I) := Part_List.Find(List, I);
+      end loop;
+      return Res.all;
+   end From_File_To_Part_Array;
 
-   function Figure_From_File_To_Packet (F_In : File_Type) return Part_Type is
+   function Get_Part_List (I : Input_Type) return Part_List.List_Type is
+      List : Part_List.List_Type;
+      Temp : Part_Struct;
    begin
-      return Get_Part(F_In);
-   end Figure_From_File_To_Packet;
+      loop
+         Temp := Get_Part(I);
+         Part_List.Insert(List, Get(Temp.Dim &To_Unbounded_String(" ")& Temp.Data, Temp.Id));
+      end loop;
+   exception
+      when End_Error =>
+         return List;
+   end Get_Part_List;
 
-   procedure Put (Item: Part_Type) is
+   procedure Put (Item: Part_Struct) is
    begin
       Put("Id: " & To_String(Item.Id));
       New_Line;
@@ -48,7 +63,7 @@ package body Part_Convert is
       return Res;
    end Get_Part_Data;
 
-   function Get_Part (I : Input_Type) return Part_Type is
+   function Get_Part (I : Input_Type) return Part_Struct is
       Re_Part_Cap : constant Pattern_Matcher :=
         Compile ("# Part: ([0-9]{1,2})");
       Re_Dim : constant Pattern_Matcher :=
@@ -59,7 +74,7 @@ package body Part_Convert is
       Matches_Part : Match_Array(1..1);
       Row : String(1..ROW_LENGTH);
       Row_Len : Integer;
-      Res : Part_Type;
+      Res : Part_Struct;
       X,Y,Z: Natural := 0;
    begin
       Get_Line(I, Row, Row_Len);

@@ -2,7 +2,7 @@ with Ada.Text_Io; use Ada.Text_Io;
 package body Soma is
 
    function Verify(Desc : Part_Array; Goal : Full_Part) return Boolean is
-      Inverted_Goal,Result,work : Full_Part;
+      Result,work : Full_Part;
       Ret : Boolean;
    begin
       Result := not Goal;

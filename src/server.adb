@@ -5,6 +5,7 @@ with Ada.Exceptions;                     use Ada.Exceptions;
 with Ada.Strings.Unbounded;              use Ada.Strings.Unbounded;
 
 with Part_Convert;                       use Part_Convert;
+with Part_Types;                         use Part_Types;
 with Client_Manager;                     use Client_Manager;
 
 with TJa.Sockets;                        use TJa.Sockets;
@@ -26,6 +27,7 @@ procedure Server is
          New_Client.Nick := To_Unbounded_String("Client" & Integer'Image(Id));
          New_Client.T.Run;
          Clients.Insert(New_Client);
+         Clients.Put;
       end loop;
    end Accept_Pool;
 
@@ -37,12 +39,15 @@ begin
                       "Usage: " & Command_Name & " port");
    end if;
 
+   Open(F_In, In_File, "./data/soma_figures.txt");
+   Figures.Set(From_File_To_Part_Array(F_In));
+   Close(F_In);
    Open(F_In, In_File, "./data/soma_parts.txt");
+   Parts.Set(From_File_To_Part_Array(F_In));
+   Close(F_In);
 
-
-   Put(Part_From_File_To_Packet(F_In));
-   Put(Part_From_File_To_Packet(F_In));
-   Put(Part_From_File_To_Packet(F_In));
+   --Put(Figures.Get(1));
+   --Put(Parts.Get);
 
    Accept_Pool(Natural'Value(Argument(1)));
 

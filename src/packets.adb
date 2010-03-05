@@ -24,6 +24,8 @@ package body Packets is
       Buffer: String(1..100);
       Length: Positive := 100;
    begin
+      -- This is needed because GNAT i broken.
+      Item := To_Unbounded_String("");
       while Length = 100 loop
          Get_Line(Socket, Buffer, Length);
          Item := Item & To_Unbounded_String(Buffer(1..Length));

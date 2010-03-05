@@ -64,11 +64,58 @@ package body Client_Manager is
       begin
          Client_List.Insert(List, Item);
       end Insert;
+
       procedure Remove(Item: in Socket_Type) is
       begin
          Client_List.Remove(List, Item);
       end Remove;
+
+      procedure Put is
+      begin
+         Client_List.Put(List);
+      end Put;
    end Clients;
+
+   protected body Parts is
+      function Get return Unbounded_String is
+      begin
+         return To_Unbounded_String(Parts.all);
+      end Get;
+
+      function Get return Part_Array is
+      begin
+         return Parts.all;
+      end Get;
+
+      procedure Set (Parts_In : Part_Array) is
+      begin
+         Parts := new Part_Array(Parts_In'Range);
+         Parts.all := Parts_In;
+      end Set;
+   end Parts;
+
+   protected body Figures is
+      function Get(Id : Natural) return Unbounded_String is
+      begin
+         return To_Unbounded_String(Figures.all(Id));
+      end Get;
+
+      function Get(Id : Natural) return Full_Part is
+      begin
+         return Figures.all(Id);
+      end Get;
+
+      function Exist(Id : Natural) return Boolean is
+      begin
+         return (Figures'First <= Id) and (Figures'Last >= Id);
+      end Exist;
+
+      procedure Set (Figures_In : Part_Array) is
+      begin
+         Figures := new Part_Array(Figures_In'Range);
+         Figures.all := Figures_In;
+      end Set;
+   end Figures;
 
    function Login (Socket: Socket_Type) return Boolean is
    begin

@@ -5,16 +5,11 @@ with Packets;                            use Packets;
 with Soma;                               use Soma;
 with Generic_Unsorted_List;
 with Misc;                               use Misc;
+with Part_Types;                         use Part_Types;
 
 with TJa.Sockets;                        use TJa.Sockets;
 
 package Client_Manager is
-
-   --type Result_Type is private;
-   --type Client_List_Type is private;
-   --type Result_List_Type is private;
-   --type Client_List is access Client_List_Type;
-   --type Result_List is access Result_List_Type;
 
    type Client_Element_Type;
    type Client_Type is access Client_Element_Type;
@@ -37,7 +32,6 @@ package Client_Manager is
       new Generic_Unsorted_List (Data_Type => Client_Type,
                                  Key_Type => Socket_Type,
                                  Get_Key => Get_Socket);
-   --type Client_List_Type is new Client_List.List_Type;
 
    function Get_Figure_Id (Item: in Result_Type) return Positive;
    procedure Put (Item: in Result_Type);
@@ -61,9 +55,27 @@ package Client_Manager is
    protected Clients is
       procedure Insert(Item: in Client_Type);
       procedure Remove(Item: in Socket_Type);
+      procedure Put;
    private
       List: Client_List.List_Type;
    end Clients;
+
+   protected Parts is
+      function Get return Unbounded_String;
+      function Get return Part_Array;
+      procedure Set (Parts_In : Part_Array);
+   private
+      Parts: Part_Array_Access;
+   end Parts;
+
+   protected Figures is
+      function Get(Id : Natural) return Unbounded_String;
+      function Get(Id : Natural) return Full_Part;
+      function Exist(Id : Natural) return Boolean;
+      procedure Set (Figures_In : Part_Array);
+   private
+      Figures: Part_Array_Access;
+   end Figures;
 
 private
 
