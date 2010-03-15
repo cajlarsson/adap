@@ -2,4 +2,83 @@
 Vi har arbetat med ett projekt med ett klient-sever system för
 lösning av somakuber. I projketet skulle nätverk,
  paralellprogrammering samt protokoll vara centralt
-%
+
+\section{Utförande}
+Vi bestämde oss för att från början använda versionshantering med git\footnote{
+http://git-scm.com/} och skaffade ett offentligt förråd på github\footnote{
+http://github.com/docksider/adap}. Detta använde vi kontinuerligt under hela
+utvecklingsperioden.
+\\\indent Först skrev vi en testklient och server för att känna lite på TJa-biblitoteket.
+Sedan började vi med typer för att hantera delar. Dessa ville vi ha så snabba
+som möjligt så vi valde att basera dessa på adas ``modular'' typer, då dessa
+tillåter bitoperatorer. För att kunna hantera sekvenser längre än 64 bitar 
+skapades en typ som är dels en array av 64bitars ``modular'' samt ett värde som
+ger antalet bitar i sista elementet. Vi implementerade bitoperatorer för dessa
+ samt praktiska IO-funktioner.
+\\\indent Ovanpå detta skapades typer för att hantera de tre-dimensionella 
+delarna. En typ innehöll en bitsekvens och en rymdbeskrivning, även denna fick
+bitoperatorer. En annan typ skapades för att hålla koll på förflyttninar och
+rotationer av en del. Tillslut skapades en sammanslagning av dessa två som 
+kan roteras och flyttas, denna är den typen som användes primärt senare i koden.
+
+\\\indent Då själva lösaren för somakuber inte var påbörjad när vi började
+skriva klienten så skrevs all kod till klienten med förutsatsen att lösaren
+skulle vara en funktion som returnerade en array med delbeskrivningar som löser
+figuren, och kastar ett exception om den inte klarar den.
+\\\indent Klienten inleds med lite väldigt imperativ kod där alla handshake och 
+användarindata behandlas. Så när huvudloopen i programmet påbörjas så är all
+ uppkoppling mot servern avklarad. I huvud loopen finns en Casesats som sköter 
+all annan indata från servern och motsvarande input. Det krävdes i vissa fall 
+väldigt spännande kombinationer av funktioner för att hitta de tal och dyl som 
+behövdes för att konstruera korrekta datatyper, en del av detta abstraherades 
+bort i egna funktioner.
+\\\indent Vi beslutade oss för att grafiken skulle vara så välfungerande att 
+inte bara  vi skulle kunna förstå den. Idén var att själva lösningsfiguren
+ som delarna skulle sorteras in i skulle skrivas ut i en stor 2D-matris. Där
+ den tredje dimensionen navigerades genom att användaren kunde styra vilket 
+lager som skulle ritas upp med piltangenterna. Brevid lösningsfiguren skulle
+den bit som just nu behandlas ligga i en kolumn, denna skulle vara uppdelad i
+ sina lager med det närmsta överst. 
+Vi kollade på det Tja paket som skulle behandla grafik och kom snabbt fram till 
+att vi inte skulle ha tid att sätta oss in i det, speciellt då vi har viss 
+erfarenhet av att rita grafik med s.k. Asciigrafik. Eftersom max storlekarna på 
+rätblocken var 100x100x100 och 10x10x10 så såg vi att maxradbredden blev 114
+,med paranteser som avgränsning i början o slutet av matriserna.
+
+\section{Resultat}
+På grund av tidsbrist var det flera mål vi blev tvugna att prioritera ned, då det 
+egentligen inte var krav som: snygg och läsbar kod. Klientens kod skulle städas i
+och en grafikmotor som fungerade med sitt interface.
+\\\indent Så här ser en lösningsmatris och en bit utritad i vårt system ut:
+\begin{verbatim}
+
+[101](01)
+[011][10]
+[111](00)
+[111][00]
+
+\end{verbatim}
+Paranteser representerar första raden på ett nytt lager i en bitmatris. Olika 
+modelus och divitioner och annan liknande mattemagi användes för att få 
+matrisen att bete sig som den gör, det är okänt vad som händer om den stora 
+matrisen inte är längre än total längden på alla lager av bitmatrisen, det var 
+ett problem som inte hanns med.
+\\\indent Då våra typer var definierade med bitoperatorer, ``and'' ``or''
+``not'' ``xor'', på hårdvarunivå blev typerna otroligt snabba på att verifera
+en lösning samt kontrollera om en del passar. De var inte i närheten lika snabba
+ att flytta runt samt rotera, så planen var att vid små delar bygga upp en 
+databas med alla rotationer samt förskutningar så för att slippa göra detta 
+under de tidskritiska momenten. En idé till själva lösningen var att försöka 
+lösa kuben från en sida, plan för plan, och prioritera de grenar med störst
+sammanhängade hål.
+
+\section{Diskution}
+Projektet är stort, mycket större än vi insåg när vi började. Vi började
+plannera innan projktet var helt startat och hann inte färdigt, vi 
+borde hållit ambitionerna om kvalitet nere och hastighet i utveckling
+högst. För mycket tid lades på att rotera och verifiera koden för 
+rotationer och förflyttning som i slutändan inte uppfyllde
+specifikationen. Mycket av denna tid hade kunnat klippts om det funnits 
+en server/klient som man kunde prova sin kod mot. Detta hade antagligen 
+löst hela problemet i finalen och fler än 3-4 hade haft en färdig klient.
+
