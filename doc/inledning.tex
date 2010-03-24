@@ -1,5 +1,5 @@
 \section{Inledning}
-Vi har arbetat med ett projekt med ett klient-sever system för
+Vi har arbetat med ett projekt med ett klient--sever system för
 lösning av somakuber. I projketet skulle nätverk,
  paralellprogrammering samt protokoll vara centralt
 
@@ -19,15 +19,15 @@ ger antalet bitar i sista elementet. Vi implementerade bitoperatorer för dessa
 delarna. En typ innehöll en bitsekvens och en rymdbeskrivning, även denna fick
 bitoperatorer. En annan typ skapades för att hålla koll på förflyttninar och
 rotationer av en del. Tillslut skapades en sammanslagning av dessa två som 
-kan roteras och flyttas, denna är den typen som användes primärt senare i koden.
+kan roteras och flyttas, detta är den typ som användes primärt senare i koden.
 
 \\\indent Då själva lösaren för somakuber inte var påbörjad när vi började
 skriva klienten så skrevs all kod till klienten med förutsatsen att lösaren
 skulle vara en funktion som returnerade en array med delbeskrivningar som löser
 figuren, och kastar ett exception om den inte klarar den.
 \\\indent Klienten inleds med lite väldigt imperativ kod där alla handshake och 
-användarindata behandlas. Så när huvudloopen i programmet påbörjas så är all
- uppkoppling mot servern avklarad. I huvud loopen finns en Casesats som sköter 
+användarindata behandlas. När huvudloopen i programmet påbörjas så är all
+ uppkoppling mot servern avklarad. I huvudloopen finns en case-sats som sköter 
 all annan indata från servern och motsvarande input. Det krävdes i vissa fall 
 väldigt spännande kombinationer av funktioner för att hitta de tal och dyl som 
 behövdes för att konstruera korrekta datatyper, en del av detta abstraherades 
@@ -41,9 +41,9 @@ den bit som just nu behandlas ligga i en kolumn, denna skulle vara uppdelad i
  sina lager med det närmsta överst. 
 Vi kollade på det Tja paket som skulle behandla grafik och kom snabbt fram till 
 att vi inte skulle ha tid att sätta oss in i det, speciellt då vi har viss 
-erfarenhet av att rita grafik med s.k. Asciigrafik. Eftersom max storlekarna på 
-rätblocken var 100x100x100 och 10x10x10 så såg vi att maxradbredden blev 114
-,med paranteser som avgränsning i början o slutet av matriserna.
+erfarenhet av att rita grafik med s.k. Asciigrafik. Eftersom maxstorlekarna på 
+rätblocken var 100x100x100 och 10x10x10 så såg vi att maxradbredden blev 114, 
+med paranteser som avgränsning i början o slutet av matriserna.
 
 \section{Resultat}
 På grund av tidsbrist var det flera mål vi blev tvugna att prioritera ned, då det 
@@ -59,7 +59,7 @@ och en grafikmotor som fungerade med sitt interface.
 
 \end{verbatim}
 Paranteser representerar första raden på ett nytt lager i en bitmatris. Olika 
-modelus och divitioner och annan liknande mattemagi användes för att få 
+modulus och divitioner och annan liknande mattemagi användes för att få 
 matrisen att bete sig som den gör, det är okänt vad som händer om den stora 
 matrisen inte är längre än total längden på alla lager av bitmatrisen, det var 
 ett problem som inte hanns med.
